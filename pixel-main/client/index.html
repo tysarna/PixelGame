@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Pixel Social</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Theme toggle -->
+<button class="theme-toggle" id="theme-toggle" title="Switch theme" aria-label="Switch theme"></button>
+
+<!-- Floating pixel particles -->
+<div class="pixel-particle" style="left:8%;bottom:5%;--dur:12s;--delay:0s"></div>
+<div class="pixel-particle" style="left:22%;bottom:10%;--dur:15s;--delay:2s"></div>
+<div class="pixel-particle" style="left:38%;bottom:3%;--dur:11s;--delay:4s"></div>
+<div class="pixel-particle" style="left:55%;bottom:8%;--dur:14s;--delay:1s"></div>
+<div class="pixel-particle" style="left:70%;bottom:6%;--dur:13s;--delay:3s"></div>
+<div class="pixel-particle" style="left:85%;bottom:12%;--dur:16s;--delay:5s"></div>
+<div class="pixel-particle" style="left:15%;bottom:15%;--dur:17s;--delay:7s"></div>
+<div class="pixel-particle" style="left:48%;bottom:2%;--dur:10s;--delay:6s"></div>
+
+<div id="boot-screen" class="screen active">
+  <div class="boot-spinner"></div>
+  <div class="boot-text" id="boot-text">Loading config…</div>
+</div>
+
+<div id="auth-screen" class="screen">
+  <div class="auth-box">
+    <div class="auth-logo">PIXEL SOCIAL</div>
+    <div class="auth-tagline">pick a character or generate your own</div>
+    <div id="signin-form">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signin-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signin-password" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" id="signin-btn">Sign In</button>
+      <div id="signin-error" class="auth-error"></div>
+      <div class="auth-toggle">No account? <a id="show-signup">Create one</a></div>
+    </div>
+    <div id="signup-form" style="display:none;">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signup-password" placeholder="8+ chars, upper, lower, number">
+      </div>
+      <div class="form-group">
+        <label>Display Name</label>
+        <input type="text" id="signup-name" placeholder="YourName">
+      </div>
+      <button class="btn-primary" id="signup-btn">Create Account</button>
+      <div id="signup-error" class="auth-error"></div>
+      <div class="auth-toggle">Already have an account? <a id="show-signin">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<div id="select-screen" class="screen">
+  <div class="logo">PIXEL SOCIAL</div>
+  <div class="tagline">pick a character or generate your own</div>
+  <div class="gen-bar">
+    <input id="desc-input" type="text" placeholder="describe a character… e.g. blue spiky hair, red hoodie, glasses" />
+    <button id="gen-btn" onclick="startGenerate()">GENERATE</button>
+  </div>
+  <div class="hint">
+    Type a description and hit Generate to create a unique character via AI (takes 10-30s).<br>
+    Each account can generate up to <strong>2 times</strong> — pick your description carefully.<br>
+    Or just pick one from the grid below to jump straight in.
+  </div>
+  <div class="section-label">Available Characters</div>
+  <div class="char-grid" id="char-grid"><div class="grid-loading">Loading…</div></div>
+</div>
+
+<div class="gen-overlay" id="gen-overlay">
+  <div class="spinner"></div>
+  <div class="gen-status" id="gen-status">Generating character…</div>
+  <div class="gen-time" id="gen-time">0s</div>
+  <button class="gen-cancel" onclick="cancelGenerate()">Cancel</button>
+</div>
+
+<div id="room-screen" class="screen">
+  <button class="room-back" onclick="exitRoom()">← Back</button>
+  <div class="room-label" id="room-label">PREVIEW</div>
+  <button class="template-nav" id="template-prev" onclick="switchTemplate(-1)">◀</button>
+  <canvas id="room-canvas"></canvas>
+  <button class="template-nav" id="template-next" onclick="switchTemplate(+1)">▶</button>
+  <div id="template-label"></div>
+  <div class="room-controls-hint">Arrow keys / WASD to move · Space = wave · E = eat · R = laugh</div>
+  <div class="room-bottom">
+    <button class="btn-enter" id="enter-btn" onclick="enterGame()">ENTER GAME</button>
+  </div>
+</div>
+
+<div id="game-screen" class="screen">
+  <button class="game-back" onclick="exitGame()">← Leave</button>
+
+  <!-- Action toolbar — right edge of canvas -->
+  <div class="live-toolbar" id="live-toolbar">
+    <button class="tb-btn" onclick="tbAction('furniture')">Furniture</button>
+    <button class="tb-btn" onclick="tbAction('chat')">Chat</button>
+    <button class="tb-btn" onclick="tbAction('invite')">Invite</button>
+    <button class="tb-btn" onclick="tbAction('emotes')">Emotes</button>
+  </div>
+
+  <!-- Left: online players + chat sidebar -->
+  <div id="online-panel">
+    <div class="panel-header">
+      <span>ONLINE</span>
+      <span id="online-count" class="online-count">0</span>
+    </div>
+    <div id="online-list"></div>
+    <div class="chat-divider">
+      <span>CHAT</span>
+      <button class="chat-toggle-btn" id="chat-toggle-btn" onclick="toggleChat()">▼</button>
+    </div>
+    <div id="chat-section">
+      <div id="chat-messages"></div>
+      <form id="chat-form">
+        <input type="text" id="chat-input" placeholder="say something..." maxlength="200">
+        <button type="submit">▶</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Log strip between sidebar and canvas -->
+  <div class="log-bar open" id="log-bar"></div>
+
+  <!-- Right: game canvas only -->
+  <div id="game-main">
+    <canvas id="game-canvas"></canvas>
+    <div class="controls-hint">Arrow keys / WASD to move · Click a chair to sit · Esc = stand · Space = wave · E = eat · R = laugh · Z = sleep</div>
+  </div>
+</div>
+
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "Grand Library",
+  "width": 12,
+  "height": 12,
+  "spawnPoint": { "x": 6, "y": 8 },
+  "tileMap": [
+    ["wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","door_wood","door_wood","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_window","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_window"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_marble","floor_marble","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_marble","floor_marble","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone"]
+  ],
+  "furniture": [
+    { "itemId": "bookshelf_01",  "x": 1, "y": 1 },
+    { "itemId": "bookshelf_01",  "x": 4, "y": 1 },
+    { "itemId": "bookshelf_01",  "x": 7, "y": 1 },
+    { "itemId": "desk_01",       "x": 7, "y": 4 },
+    { "itemId": "desk_chair_01", "x": 8, "y": 5 },
+    { "itemId": "lamp_tall_01",  "x": 10, "y": 1 },
+    { "itemId": "plant_potted_01","x": 1, "y": 9 }
+  ]
+}

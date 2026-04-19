@@ -1,0 +1,34 @@
+{
+  "name": "Street Cafe",
+  "width": 12,
+  "height": 12,
+  "spawnPoint": { "x": 6, "y": 9 },
+  "tileMap": [
+    ["wall_brick","wall_brick","wall_brick","wall_window","wall_brick","door_wood","door_wood","wall_brick","wall_window","wall_brick","wall_brick","wall_brick"],
+    ["wall_brick","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","wall_brick"],
+    ["wall_brick","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","wall_brick"],
+    ["wall_brick","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","wall_brick"],
+    ["wall_brick","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","wall_brick"],
+    ["wall_brick","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","wall_brick"],
+    ["wall_brick","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","wall_brick"],
+    ["wall_brick","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","wall_brick"],
+    ["wall_brick","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","wall_brick"],
+    ["wall_brick","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","wall_brick"],
+    ["wall_brick","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","floor_stone","wall_brick"],
+    ["wall_brick","wall_brick","wall_brick","wall_brick","wall_brick","wall_brick","wall_brick","wall_brick","wall_brick","wall_brick","wall_brick","wall_brick"]
+  ],
+  "furniture": [
+    { "itemId": "bar_counter_01", "x": 1, "y": 1 },
+    { "itemId": "plant_potted_01","x": 9, "y": 1 },
+    { "itemId": "table_round_01", "x": 2, "y": 4 },
+    { "itemId": "bar_stool_01",   "x": 1, "y": 5 },
+    { "itemId": "bar_stool_01",   "x": 3, "y": 5 },
+    { "itemId": "table_round_01", "x": 5, "y": 4 },
+    { "itemId": "bar_stool_01",   "x": 4, "y": 5 },
+    { "itemId": "bar_stool_01",   "x": 6, "y": 5 },
+    { "itemId": "table_round_01", "x": 8, "y": 4 },
+    { "itemId": "bar_stool_01",   "x": 7, "y": 5 },
+    { "itemId": "bar_stool_01",   "x": 9, "y": 5 },
+    { "itemId": "lamp_tall_01",   "x": 10, "y": 8 }
+  ]
+}

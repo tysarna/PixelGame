@@ -1,0 +1,17 @@
+{
+  "name": "pixel-social-game-server",
+  "version": "1.0.0",
+  "description": "Pixel Social Rooms game server",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1024.0",
+    "@aws-sdk/client-lambda": "^3.540.0",
+    "@aws-sdk/lib-dynamodb": "^3.1024.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.1.0",
+    "ws": "^8.16.0"
+  }
+}

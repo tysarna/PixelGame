@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pixel Social — Walk Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg:       #0c0e16;
+    --surface:  #141722;
+    --border:   #1e2436;
+    --text:     #c8cdd8;
+    --dim:      #555d73;
+    --accent:   #7fdbca;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: var(--bg); color: var(--text);
+               font-family: 'JetBrains Mono', monospace; overflow: hidden; }
+
+  #app { display: flex; height: 100vh; }
+
+  /* sidebar */
+  #sidebar { width: 200px; min-width: 200px; border-right: 1px solid var(--border);
+             display: flex; flex-direction: column; }
+  #sidebar-header { padding: 12px; border-bottom: 1px solid var(--border); }
+  #sidebar-header h1 { font-size: 10px; color: var(--accent); letter-spacing: 1px; margin-bottom: 8px; }
+  #reload-btn {
+    width: 100%; padding: 7px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; color: var(--dim); font-family: inherit; font-size: 10px; cursor: pointer;
+  }
+  #reload-btn:hover { border-color: var(--accent); color: var(--accent); }
+  #sprite-list { flex: 1; overflow-y: auto; padding: 6px; display: flex; flex-direction: column; gap: 3px; }
+  .sprite-item {
+    padding: 6px 8px; border-radius: 4px; cursor: pointer; border: 1px solid transparent;
+    display: flex; align-items: center; gap: 8px; transition: all 0.1s;
+  }
+  .sprite-item:hover { background: var(--surface); }
+  .sprite-item.active { background: var(--surface); border-color: var(--accent); }
+  .sprite-thumb { width: 28px; height: 28px; image-rendering: pixelated;
+                  background: #1a1a2e; border-radius: 2px; flex-shrink: 0; }
+  .sprite-name { font-size: 9px; color: var(--text); overflow: hidden;
+                 text-overflow: ellipsis; white-space: nowrap; }
+  #no-sprites { padding: 16px 8px; font-size: 10px; color: var(--dim); line-height: 1.8; }
+  #sidebar-footer { padding: 10px 12px; border-top: 1px solid var(--border);
+                    font-size: 9px; color: var(--dim); line-height: 2; }
+  #sidebar-footer span { color: var(--accent); }
+
+  /* canvas */
+  #main { flex: 1; position: relative; overflow: hidden; background: #080a10; }
+  #game-canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+
+  /* hud */
+  #hud {
+    position: absolute; top: 12px; left: 12px; pointer-events: none;
+    font-size: 9px; color: var(--dim); letter-spacing: 0.5px;
+    background: rgba(12,14,22,0.75); padding: 6px 10px; border-radius: 4px;
+    border: 1px solid var(--border); line-height: 1.9;
+  }
+  #hud b { color: var(--accent); font-weight: 400; }
+
+  #no-char {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: var(--dim); text-align: center; line-height: 2; pointer-events: none;
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <h1>CHARACTERS</h1>
+      <button id="reload-btn">↺ Reload</button>
+    </div>
+    <div id="sprite-list"><div id="no-sprites">Loading…</div></div>
+    <div id="sidebar-footer">
+      WASD / arrows to move<br>
+      <span id="pos-hud">—</span>
+    </div>
+  </div>
+
+  <div id="main">
+    <canvas id="game-canvas"></canvas>
+    <div id="hud">
+      DIR&nbsp; <b id="hud-dir">—</b><br>
+      ANIM <b id="hud-anim">—</b><br>
+      TILE&nbsp; <b id="hud-tile">—</b>
+    </div>
+    <div id="no-char">← pick a character to walk around</div>
+  </div>
+
+</div>
+<script>
+// ── constants ──────────────────────────────────────────────────────────────
+const CELL     = 32;
+const COLS     = ['idle','stepA','stepB','sit','wave','sleep','eat','laugh'];
+const ROWS     = ['down','left','up','right'];
+const DIR_ROW  = { down:0, left:1, up:2, right:3 };
+const WALK     = [0, 1, 0, 2];   // idle, stepA, idle, stepB
+
+const SERVER   = 'http://localhost:8888';
+let   SCALE    = 3;               // character render scale (recomputed after room loads)
+const SPEED    = 120;             // px/sec
+const FPS_WALK = 8;               // walk frames/sec
+
+// Fallback tile colours (used when PNG hasn't been generated yet)
+const TILE_FALLBACK = {
+  wall_stone:   '#2a2e3e',
+  wall_window:  '#2a3550',
+  floor_wood:   '#3d2b1e',
+  floor_stone:  '#2c2c38',
+  door_wood:    '#4a3020',
+  rug_center:   '#4a2030',
+};
+
+// ── world state ────────────────────────────────────────────────────────────
+let manifest   = null;
+let room       = null;
+let tileImgs   = {};       // tileId -> Image (may be missing if not generated)
+let furnImgs   = {};       // itemId -> Image
+let tileCanvas = null;     // offscreen: rendered tile layer
+
+let spriteImg  = null;
+let playerX    = 200;
+let playerY    = 200;
+let dir        = 'down';
+let walkIdx    = 0;
+let walkAccum  = 0;
+let lastTime   = null;
+
+// world dimensions derived from room (set after load)
+let WORLD_W = 400;
+let WORLD_H = 400;
+let TILE    = 32;
+
+// ── input ──────────────────────────────────────────────────────────────────
+const keys = {};
+window.addEventListener('keydown', e => { keys[e.key] = true;  e.preventDefault(); });
+window.addEventListener('keyup',   e => { delete keys[e.key]; });
+
+// ── world loading ──────────────────────────────────────────────────────────
+async function loadWorld() {
+  try {
+    [manifest, room] = await Promise.all([
+      fetch(`${SERVER}/manifest.json`).then(r => { if (!r.ok) throw new Error(`manifest.json HTTP ${r.status}`); return r.json(); }),
+      fetch(`${SERVER}/rooms/default.json`).then(r => { if (!r.ok) throw new Error(`rooms/default.json HTTP ${r.status}`); return r.json(); }),
+    ]);
+    console.log('[world] manifest + room loaded', { room: room.name, tiles: Object.keys(manifest.tileset).length, furniture: Object.keys(manifest.furniture).length });
+  } catch (e) {
+    console.warn('[world] World data unavailable, using fallback room.', e);
+    room     = makeFallbackRoom();
+    manifest = { tileset: {}, furniture: {}, tileSize: 32 };
+  }
+
+  // compute tile size so the room fills ~90% of the viewport
+  const availW = window.innerWidth - 200; // subtract sidebar
+  const availH = window.innerHeight;
+  TILE    = Math.max(32, Math.min(
+    Math.floor(availW * 0.90 / room.width),
+    Math.floor(availH * 0.90 / room.height)
+  ));
+  // character should be ~2 tiles tall
+  SCALE   = Math.max(2, Math.round(TILE * 2 / CELL));
+
+  WORLD_W = room.width  * TILE;
+  WORLD_H = room.height * TILE;
+
+  console.log(`[world] TILE=${TILE}px  SCALE=${SCALE}x  world=${WORLD_W}x${WORLD_H}`);
+
+  // spawn
+  playerX = (room.spawnPoint?.x ?? Math.floor(room.width  / 2)) * TILE + TILE / 2;
+  playerY = (room.spawnPoint?.y ?? Math.floor(room.height / 2)) * TILE + TILE / 2;
+
+  // collect unique asset IDs
+  const tileIds = new Set(room.tileMap.flat());
+  const furnIds = new Set(room.furniture.map(f => f.itemId));
+  console.log('[world] loading tiles:', [...tileIds]);
+  console.log('[world] loading furniture:', [...furnIds]);
+
+  // load images — log hits and misses
+  await Promise.all([
+    ...[...tileIds].map(id => {
+      const url = `${SERVER}/tiles/${id}.png`;
+      return loadImg(url)
+        .then(img => { tileImgs[id] = img; console.log(`[tile] OK   ${id}`); })
+        .catch(e  => { console.warn(`[tile] MISS ${id} — ${url} (fallback colour)`); });
+    }),
+    ...[...furnIds].map(id => {
+      const url = `${SERVER}/furniture/${id}.png`;
+      return loadImg(url)
+        .then(img => { furnImgs[id] = img; console.log(`[furn] OK   ${id}`); })
+        .catch(e  => { console.warn(`[furn] MISS ${id} — ${url}`); });
+    }),
+  ]);
+
+  const tileHits = Object.keys(tileImgs).length;
+  const furnHits = Object.keys(furnImgs).length;
+  console.log(`[world] tiles loaded ${tileHits}/${tileIds.size}, furniture ${furnHits}/${furnIds.size}`);
+
+  buildTileCanvas();
+}
+
+function makeFallbackRoom() {
+  const W = 12, H = 12;
+  const tileMap = Array.from({ length: H }, (_, r) =>
+    Array.from({ length: W }, (__, c) => {
+      if (r === 0 || r === H-1 || c === 0 || c === W-1) return 'wall_stone';
+      return 'floor_wood';
+    })
+  );
+  return { name: 'Fallback', width: W, height: H,
+           spawnPoint: { x: 6, y: 6 }, tileMap, furniture: [] };
+}
+
+function buildTileCanvas() {
+  const cvs = document.createElement('canvas');
+  cvs.width  = WORLD_W;
+  cvs.height = WORLD_H;
+  const ctx = cvs.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  for (let ty = 0; ty < room.height; ty++) {
+    for (let tx = 0; tx < room.width; tx++) {
+      const id  = room.tileMap[ty][tx];
+      const px  = tx * TILE;
+      const py  = ty * TILE;
+      if (tileImgs[id]) {
+        ctx.drawImage(tileImgs[id], px, py, TILE, TILE);
+      } else {
+        ctx.fillStyle = TILE_FALLBACK[id] ?? '#1a1a2e';
+        ctx.fillRect(px, py, TILE, TILE);
+      }
+    }
+  }
+  tileCanvas = cvs;
+}
+
+// ── collision ──────────────────────────────────────────────────────────────
+function tileAt(wx, wy) {
+  if (!room) return null;
+  const tx = Math.floor(wx / TILE);
+  const ty = Math.floor(wy / TILE);
+  if (tx < 0 || ty < 0 || tx >= room.width || ty >= room.height) return null;
+  return room.tileMap[ty][tx];
+}
+
+function isWalkable(wx, wy) {
+  const id = tileAt(wx, wy);
+  if (!id) return false;
+  return manifest.tileset[id]?.walkable ?? true;
+}
+
+function canMoveTo(nx, ny) {
+  const r = 10; // foot collision radius
+  return isWalkable(nx - r, ny + 4) && isWalkable(nx + r, ny + 4) &&
+         isWalkable(nx - r, ny - 4) && isWalkable(nx + r, ny - 4);
+}
+
+// ── game loop ──────────────────────────────────────────────────────────────
+function loop(ts) {
+  if (lastTime === null) lastTime = ts;
+  const dt = Math.min((ts - lastTime) / 1000, 0.1);
+  lastTime = ts;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+
+function update(dt) {
+  let dx = 0, dy = 0;
+  if (keys['ArrowLeft']  || keys['a'] || keys['A']) { dx -= 1; dir = 'left';  }
+  if (keys['ArrowRight'] || keys['d'] || keys['D']) { dx += 1; dir = 'right'; }
+  if (keys['ArrowUp']    || keys['w'] || keys['W']) { dy -= 1; dir = 'up';    }
+  if (keys['ArrowDown']  || keys['s'] || keys['S']) { dy += 1; dir = 'down';  }
+
+  const moving = dx !== 0 || dy !== 0;
+
+  if (moving) {
+    if (dx && dy) { dx *= 0.7071; dy *= 0.7071; }
+    const nx = playerX + dx * SPEED * dt;
+    const ny = playerY + dy * SPEED * dt;
+    if (canMoveTo(nx, playerY)) playerX = nx;
+    if (canMoveTo(playerX, ny)) playerY = ny;
+
+    walkAccum += dt;
+    if (walkAccum >= 1 / FPS_WALK) {
+      walkAccum = 0;
+      walkIdx = (walkIdx + 1) % WALK.length;
+    }
+  } else {
+    walkIdx   = 0;
+    walkAccum = 0;
+  }
+
+  // HUD updates
+  const tid = tileAt(playerX, playerY) ?? '—';
+  document.getElementById('hud-dir').textContent  = dir;
+  document.getElementById('hud-anim').textContent = COLS[WALK[walkIdx]];
+  document.getElementById('hud-tile').textContent = tid;
+  const tx = Math.floor(playerX / TILE), ty = Math.floor(playerY / TILE);
+  document.getElementById('pos-hud').textContent  = `tile ${tx},${ty}`;
+}
+
+// ── render ─────────────────────────────────────────────────────────────────
+function render() {
+  const cvs = document.getElementById('game-canvas');
+  const ctx = cvs.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  const W = cvs.clientWidth, H = cvs.clientHeight;
+  if (cvs.width !== W || cvs.height !== H) { cvs.width = W; cvs.height = H; }
+
+  // camera: centre on player, clamp to world
+  let camX = playerX - W / 2;
+  let camY = playerY - H / 2;
+  camX = Math.max(0, Math.min(WORLD_W - W, camX));
+  camY = Math.max(0, Math.min(WORLD_H - H, camY));
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+  ctx.translate(-camX, -camY);
+
+  // tile layer
+  if (tileCanvas) ctx.drawImage(tileCanvas, 0, 0);
+
+  // gather furniture + player for painter's sort (y-sort)
+  const drawList = [];
+
+  for (const f of (room?.furniture ?? [])) {
+    const meta = manifest?.furniture?.[f.itemId];
+    const img  = furnImgs[f.itemId];
+    const gw   = meta?.gridWidth  ?? 1;
+    const gh   = meta?.gridHeight ?? 1;
+    // render at 2x tile size; anchor bottom-center to the grid footprint
+    const fw   = gw * TILE * 2;
+    const fh   = gh * TILE * 2;
+    const footCX = f.x * TILE + gw * TILE / 2;   // footprint center-x
+    const footBY = f.y * TILE + gh * TILE;        // footprint bottom-y
+    const fx   = footCX - fw / 2;
+    const fy   = footBY - fh;
+    drawList.push({ sortY: footBY, draw() {
+      if (img) {
+        ctx.drawImage(img, fx, fy, fw, fh);
+      } else {
+        ctx.fillStyle = '#2a3040';
+        ctx.fillRect(fx, fy, fw, fh);
+        ctx.fillStyle = '#555d73';
+        ctx.font = '8px monospace';
+        ctx.fillText(f.itemId.split('_')[0], fx + 2, fy + 10);
+      }
+    }});
+  }
+
+  if (spriteImg) {
+    const charH = CELL * SCALE;
+    drawList.push({ sortY: playerY + charH / 2, draw() { drawPlayer(ctx); } });
+  }
+
+  drawList.sort((a, b) => a.sortY - b.sortY);
+  for (const item of drawList) item.draw();
+
+  ctx.restore();
+}
+
+function drawPlayer(ctx) {
+  const row = DIR_ROW[dir];
+  const col = WALK[walkIdx];
+  const dw  = CELL * SCALE;
+  const dh  = CELL * SCALE;
+  const dx  = playerX - dw / 2;
+  const dy  = playerY - dh / 2;
+
+  // shadow
+  ctx.save();
+  ctx.globalAlpha = 0.22;
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.ellipse(playerX, playerY + dh / 2 - 6, 16, 6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.drawImage(spriteImg, col * CELL, row * CELL, CELL, CELL, dx, dy, dw, dh);
+}
+
+// ── sprite sidebar ─────────────────────────────────────────────────────────
+document.getElementById('reload-btn').addEventListener('click', loadSheets);
+
+async function loadSheets() {
+  const list = document.getElementById('sprite-list');
+  list.innerHTML = '<div id="no-sprites">Loading…</div>';
+  let names;
+  try {
+    const r = await fetch(`${SERVER}/sheets.json`);
+    if (!r.ok) throw new Error();
+    names = await r.json();
+  } catch {
+    list.innerHTML = `<div id="no-sprites" style="color:#ff6b6b">Server not running.<br><br>Run:<br>python scripts/serve_sprites.py</div>`;
+    return;
+  }
+  if (!names.length) {
+    list.innerHTML = '<div id="no-sprites">No PNGs in output/sheets/ yet.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  for (const name of names) {
+    const url  = `${SERVER}/sheets/${name}`;
+    const item = document.createElement('div');
+    item.className = 'sprite-item';
+
+    const thumb = document.createElement('canvas');
+    thumb.className = 'sprite-thumb';
+    thumb.width = 28; thumb.height = 28;
+
+    const label = document.createElement('div');
+    label.className = 'sprite-name';
+    label.textContent = name.replace('.png', '');
+
+    item.append(thumb, label);
+    list.appendChild(item);
+
+    loadImg(url).then(img => {
+      thumb.getContext('2d').drawImage(img, 0, 0, CELL, CELL, 0, 0, 28, 28);
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.sprite-item.active').forEach(e => e.classList.remove('active'));
+        item.classList.add('active');
+        spriteImg = img;
+        document.getElementById('no-char').style.display = 'none';
+        // reset to spawn
+        if (room) {
+          playerX = (room.spawnPoint?.x ?? 6) * TILE + TILE / 2;
+          playerY = (room.spawnPoint?.y ?? 6) * TILE + TILE / 2;
+        }
+      });
+    });
+  }
+}
+
+function loadImg(url) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload  = () => res(img);
+    img.onerror = rej;
+    img.src = url;
+  });
+}
+
+// ── boot ───────────────────────────────────────────────────────────────────
+loadWorld().then(() => loadSheets());
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

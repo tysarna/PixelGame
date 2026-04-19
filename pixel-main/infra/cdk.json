@@ -1,0 +1,10 @@
+{
+  "app": "npx ts-node bin/infra.ts",
+  "watch": {
+    "include": ["**"],
+    "exclude": ["README.md"]
+  },
+  "context": {
+    "aws-cdk:enableDiffNoFail": "true"
+  }
+}

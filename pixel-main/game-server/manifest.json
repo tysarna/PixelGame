@@ -1,0 +1,181 @@
+{
+  "tileset": {
+    "wall_stone": {
+      "sprite": "/tiles/wall_stone.png",
+      "walkable": false
+    },
+    "wall_window": {
+      "sprite": "/tiles/wall_window.png",
+      "walkable": false
+    },
+    "floor_wood": {
+      "sprite": "/tiles/floor_wood.png",
+      "walkable": true
+    },
+    "floor_stone": {
+      "sprite": "/tiles/floor_stone.png",
+      "walkable": true
+    },
+    "door_wood": {
+      "sprite": "/tiles/door_wood.png",
+      "walkable": true
+    },
+    "rug_center": {
+      "sprite": "/tiles/rug_center.png",
+      "walkable": true
+    },
+    "wall_brick": {
+      "sprite": "/tiles/wall_brick.png",
+      "walkable": false
+    },
+    "floor_carpet": {
+      "sprite": "/tiles/floor_carpet.png",
+      "walkable": true
+    },
+    "floor_marble": {
+      "sprite": "/tiles/floor_marble.png",
+      "walkable": true
+    }
+  },
+  "furniture": {
+    "chair_wood_01": {
+      "sprite": "/furniture/chair_wood_01.png",
+      "pixelWidth": 32,
+      "pixelHeight": 32,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "sittable": true,
+      "zLayer": 2
+    },
+    "table_round_01": {
+      "sprite": "/furniture/table_round_01.png",
+      "pixelWidth": 32,
+      "pixelHeight": 32,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "sittable": false,
+      "zLayer": 2
+    },
+    "sofa_blue_01": {
+      "sprite": "/furniture/sofa_blue_01.png",
+      "pixelWidth": 64,
+      "pixelHeight": 32,
+      "gridWidth": 2,
+      "gridHeight": 1,
+      "sittable": true,
+      "zLayer": 2
+    },
+    "lamp_tall_01": {
+      "sprite": "/furniture/lamp_tall_01.png",
+      "pixelWidth": 32,
+      "pixelHeight": 32,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "sittable": false,
+      "zLayer": 2
+    },
+    "bookshelf_01": {
+      "sprite": "/furniture/bookshelf_01.png",
+      "pixelWidth": 64,
+      "pixelHeight": 32,
+      "gridWidth": 2,
+      "gridHeight": 1,
+      "sittable": false,
+      "zLayer": 2
+    },
+    "desk_01": {
+      "sprite": "/furniture/desk_01.png",
+      "pixelWidth": 64,
+      "pixelHeight": 32,
+      "gridWidth": 2,
+      "gridHeight": 1,
+      "sittable": false,
+      "zLayer": 2
+    },
+    "desk_chair_01": {
+      "sprite": "/furniture/desk_chair_01.png",
+      "pixelWidth": 32,
+      "pixelHeight": 32,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "sittable": true,
+      "zLayer": 2
+    },
+    "bar_counter_01": {
+      "sprite": "/furniture/bar_counter_01.png",
+      "pixelWidth": 64,
+      "pixelHeight": 32,
+      "gridWidth": 2,
+      "gridHeight": 1,
+      "sittable": false,
+      "zLayer": 2
+    },
+    "bar_stool_01": {
+      "sprite": "/furniture/bar_stool_01.png",
+      "pixelWidth": 32,
+      "pixelHeight": 32,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "sittable": true,
+      "zLayer": 2
+    },
+    "plant_potted_01": {
+      "sprite": "/furniture/plant_potted_01.png",
+      "pixelWidth": 32,
+      "pixelHeight": 32,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "sittable": false,
+      "zLayer": 2
+    },
+    "fireplace_01": {
+      "sprite": "/furniture/fireplace_01.png",
+      "pixelWidth": 64,
+      "pixelHeight": 32,
+      "gridWidth": 2,
+      "gridHeight": 1,
+      "sittable": false,
+      "zLayer": 2
+    },
+    "piano_01": {
+      "sprite": "/furniture/piano_01.png",
+      "pixelWidth": 64,
+      "pixelHeight": 32,
+      "gridWidth": 2,
+      "gridHeight": 1,
+      "sittable": false,
+      "zLayer": 2
+    },
+    "coffee_table_01": {
+      "sprite": "/furniture/coffee_table_01.png",
+      "pixelWidth": 32,
+      "pixelHeight": 32,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "sittable": false,
+      "zLayer": 2
+    }
+  },
+  "spriteSheet": {
+    "cellSize": 32,
+    "cols": 8,
+    "rows": 4,
+    "colMap": {
+      "idle": 0,
+      "stepA": 1,
+      "stepB": 2,
+      "sit": 3,
+      "wave": 4,
+      "sleep": 5,
+      "eat": 6,
+      "laugh": 7
+    },
+    "rowMap": {
+      "down": 0,
+      "left": 1,
+      "up": 2,
+      "right": 3
+    }
+  },
+  "tileSize": 32
+}

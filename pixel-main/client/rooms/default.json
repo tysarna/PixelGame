@@ -1,0 +1,28 @@
+{
+  "name": "Default Room",
+  "width": 12,
+  "height": 12,
+  "spawnPoint": { "x": 6, "y": 6 },
+  "tileMap": [
+    ["wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","door_wood","door_wood","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_window","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","rug_center","rug_center","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","rug_center","rug_center","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_window"],
+    ["wall_stone","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","floor_wood","wall_stone"],
+    ["wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone","wall_stone"]
+  ],
+  "furniture": [
+    { "itemId": "table_round_01", "x": 5, "y": 5 },
+    { "itemId": "chair_wood_01", "x": 4, "y": 5 },
+    { "itemId": "chair_wood_01", "x": 6, "y": 5 },
+    { "itemId": "bookshelf_01", "x": 1, "y": 1 },
+    { "itemId": "lamp_tall_01", "x": 10, "y": 1 },
+    { "itemId": "sofa_blue_01", "x": 8, "y": 8 }
+  ]
+}

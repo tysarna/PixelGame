@@ -1,0 +1,5 @@
+{
+  "listApi": "https://snvjkgz4ls5dgo5bgvxypiwo4a0ajktj.lambda-url.us-east-1.on.aws/",
+  "generateApi": "https://xa6jiidooqddnv7nwbkmg2gbn40edrey.lambda-url.us-east-1.on.aws/",
+  "defaultRoom": "/rooms/default.json"
+}

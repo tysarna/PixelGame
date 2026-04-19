@@ -1,0 +1,21 @@
+{
+  "name": "pixel-social-infra",
+  "version": "1.0.0",
+  "description": "AWS CDK infrastructure for Pixel Social",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "aws-cdk": "^2.150.0",
+    "dotenv": "^17.4.2",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.150.0",
+    "constructs": "^10.0.0"
+  }
+}
