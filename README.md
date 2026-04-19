@@ -115,12 +115,7 @@ Deployed via `cdk deploy PixelSocialStack`.
 | **ECS Cluster** | [Services](https://us-east-1.console.aws.amazon.com/ecs/v2/clusters/pixel-social-cluster/services) |
 | **Cognito User Pool** | [us-east-1_T4Gej0pzm](https://us-east-1.console.aws.amazon.com/cognito/v2/idp/user-pools/us-east-1_T4Gej0pzm) |
 
-## Live URLs
 
-- **App**: https://dc9iwjwlk784c.cloudfront.net
-- **List Avatars API**: https://snvjkgz4ls5dgo5bgvxypiwo4a0ajktj.lambda-url.us-east-1.on.aws/
-- **Generate Avatar API**: https://3rzuvtfxxly4tzdvznfipkb2qe0tlmyi.lambda-url.us-east-1.on.aws/
-- **WebSocket (ALB)**: wss://PixelS-Pixel-Av5cnPVBHFIm-2101309226.us-east-1.elb.amazonaws.com/ws
 
 ## Quick Debug Commands
 
