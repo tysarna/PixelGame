@@ -1,0 +1,43 @@
+# Build outputs
+cdk.out/
+node_modules/
+__pycache__/
+*.pyc
+*.zip
+*.egg-info/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment / secrets
+.env
+.env.local
+.env.production
+*.env
+sa-key.json
+lambda/sa-key.json
+
+# CDK context
+infra/cdk.context.json
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Docker
+.docker/
+
+# Debug / temp files
+debug_*.png
+debug_*.jpg
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
